@@ -20,13 +20,13 @@ parser.add_argument("-tn", "--test_name", dest="tn",
                     help="Test Case name: (str) ex: Test_Undercloud")
 
 parser.add_argument("-et", "--elapse_time", dest="et", type=float,
-                    help="Total time to run test.")
+                    help="Total time elapsed to complete test.")
 
 parser.add_argument("-jl", "--job_link", default=None, dest="job_url",
                     help="Job link provides a means of including job url in test update.")
 
 parser.add_argument("-t", "--tags", default=None, dest="tags",
-                    help="Tags for testcase.")
+                    help="Tags to be included on all specified testcase.")
 
 parser.add_argument("-o", "--output_file", dest="output_f",
                     help="Junit output filename")

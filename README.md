@@ -32,7 +32,8 @@ optional arguments:
 ```
 
 ```
-python linkr.py -tn "Undercloud Deployment" -tc rhos-10202 rhos-1200 rhos-304 -ts "RHOS_10_DEPLOYMENT_TEST" -et 0.23 -o test_results.xml 
+python ./linkr.py -tn "Undercloud Deployment" -jl http://localhost -t director 
+        -tc rhos-1020203 rhos-120203030 rhos-3040301 -ts "RHOS_9_DEPLOYMENT_TEST" -et 0.23 -o test_results.xml 
 ```
 
 #### Output:
@@ -40,10 +41,16 @@ python linkr.py -tn "Undercloud Deployment" -tc rhos-10202 rhos-1200 rhos-304 -t
 <?xml version="1.0" ?>
 <testsuites errors="0" failures="0" tests="3" time="0.69">
         <testsuite errors="0" failures="0" name="RHOS_9_DEPLOYMENT_TEST" skipped="0" tests="3" time="0.69">
+                <properties>
+                        <property name="polarion-custom-isautomated" value="True"/>
+                        <property name="polarion-custom-tags" value="director"/>
+                        <property name="polarion-custom-jenkinsjobs" value="http://localhost"/>
+                </properties>
                 <testcase name="Undercloud Deployment: rhos-1020203" time="0.230000"/>
                 <testcase name="Undercloud Deployment: rhos-120203030" time="0.230000"/>
                 <testcase name="Undercloud Deployment: rhos-3040301" time="0.230000"/>
         </testsuite>
 </testsuites>
+
 
 ```
