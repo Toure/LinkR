@@ -1,53 +1,82 @@
 #!/usr/bin/env python
 import argparse
 from junit_xml import TestSuite, TestCase
+from xml.etree import ElementTree
 from sys import argv, exit
-import time
-parser = argparse.ArgumentParser(description="Example: python linkr.py -s rhos-203004 -n 2 -ts rhos-23888 -tc 'rhos-1234"
-                                             ", rhos-24050' -tn undercloud_test -o /tmp/results.xml")
 
-parser.add_argument("-s", "--skip_test_name", dest="skip_test", help="Name of test(s) to mark skipped.")
-parser.add_argument("-n", "--number_of_test", default= 1, dest="number_test", metavar="2",
-                    help="Number of test to include in output file, this option will take a number and require a list"
-                         " of test_cases for the `--test_case` option.")
-parser.add_argument("-ts", "--test_suite", dest="ts", help="Test suite id.")
-parser.add_argument("-tc", "--test_case", dest="tc", help="Test Case id, if number of test cases is `1`, else provide a"
-                                                          " list seperated by commas: rhos-1234, rhos-2345")
-parser.add_argument("-tn", "--test_name", dest="tn", help="Test Case name: (str) ex: Test_Undercloud")
-parser.add_argument("-o", "--output_file", dest="output_f", help="Junit output filename")
+parser = argparse.ArgumentParser(
+    description="Example: python linkr.py -s rhos-203004 -n 2 -ts rhos-23888 -tc 'rhos-1234, "
+                "rhos-24050' -tn undercloud_test -o /tmp/results.xml")
+
+parser.add_argument("-s", "--skip_test_name", dest="skip_test",
+                    help="Name of test(s) to mark skipped.")
+
+parser.add_argument("-ts", "--test_suite", dest="ts",
+                    help="Test suite id.")
+
+parser.add_argument("-tc", "--test_case", nargs='+', dest="tc",
+                    help="Test Case id. ")
+
+parser.add_argument("-tn", "--test_name", dest="tn",
+                    help="Test Case name: (str) ex: Test_Undercloud")
+
+parser.add_argument("-et", "--elapse_time", dest="et", type=float,
+                    help="Total time to run test.")
+
+parser.add_argument("-jl", "--job_link", default=None, dest="job_url",
+                    help="Job link provides a means of including job url in test update.")
+
+parser.add_argument("-t", "--tags", default=None, dest="tags",
+                    help="Tags for testcase.")
+
+parser.add_argument("-o", "--output_file", dest="output_f",
+                    help="Junit output filename")
 # parser.add_argument("-r", "--requirements.txt", dest="req", help="Test case requirements.txt: "
 #                                                            "`test foo will test this blah functionality`")
 
 args = parser.parse_args()
 
 
-class Linkr(object):
-    def __init__(self):
-        self.skip = args.skip_test
-        self.number_test = args.number_test
-        self.tc = args.tc
-        self.tn = args.tn
-        self.ts = args.ts
-        self.et = time.clock()
-        self.output_f = args.output_f
-        # TODO work on requirement upload.
-        #self.req = args.req
-
-    def gen_junit(self):
+class LinkR(object):
+    @classmethod
+    def gen_junit(cls):
         """
         Generates junit xml file from arguments passed on the cli.
         :return: junit.xml
         """
-        if self.number_test == 1:
-            #test_case = [TestCase(self.tn, None, self.tc, self.et)]
-            #test_case.append(TestCase())
-            test_case = [TestCase('Deployment_Test: Undercloud_Test', '', 0.000, '', '')]
-            test_case.append(TestCase('Deployment_Test: Undercloud_Properties', '', 0.01, '', ''))
+        if args.skip_test:
 
-            ts = TestSuite(self.ts, test_case)
+            args.tc.pop()
+        if len(args.tc) == 1:
+            test_case = [TestCase("{}: {}".format(args.tn, args.tc), '', args.et, '', ''),
+                         TestCase("property,{'name': 'polarion-custom-notes', 'value': args.job_url}")]
+            ts = TestSuite(args.ts, test_case)
+        else:
+            test_case = [TestCase("{}: {}".format(args.tn, args.tc.pop(0)), '', args.et, '', '')]
 
-        with open(self.output_f, 'w') as results:
+            for cases in args.tc:
+                test_case.append(TestCase("{}: {}".format(args.tn, cases), '', args.et, '', ''))
+
+            ts = TestSuite(args.ts, test_case)
+
+        with open(args.output_f, 'w') as results:
             TestSuite.to_file(results, [ts])
+
+    @staticmethod
+    def property_inject():
+        """
+        Property_inject will append additional properties needed for polarion.
+        :return: modified results file.
+        """
+        # TODO complete this method.
+        xunit_xml_parser = ElementTree.parse(args.output_f)
+        properties_tag = ElementTree.SubElement(xunit_xml_parser.getroot(), 'testsuites')
+        # Add the Notes property.
+        notes_property = ElementTree.SubElement(properties_tag, 'property', {'name': 'polarion-custom-notes',
+                                                                             'value': args.job_url})
+        # Add the Jenkins Job property.
+        jenkins_job_property = ElementTree.SubElement(properties_tag, 'property', {'name': 'polarion-custom-jenkinsjobs',
+                                                                                   'value': args.job_url})
 
 
 def main():
@@ -58,9 +87,9 @@ def main():
     if len(argv) < 2:
         parser.print_help()
         exit(1)
+    else:
+        LinkR.gen_junit()
 
-    link_testr = Linkr()
-    link_testr.gen_junit()
 
 if __name__ == "__main__":
     main()
