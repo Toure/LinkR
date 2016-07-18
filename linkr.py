@@ -19,7 +19,7 @@ parser.add_argument("-tc", "--test_case", nargs='+', dest="tc",
 parser.add_argument("-tn", "--test_name", dest="tn",
                     help="Test Case name: (str) ex: Test_Undercloud")
 
-parser.add_argument("-et", "--elapse_time", dest="et", type=float,
+parser.add_argument("-et", "--elapse_time", dest="et", type=int,
                     help="Total time elapsed to complete test.")
 
 parser.add_argument("-jl", "--job_link", default=None, dest="job_url",
