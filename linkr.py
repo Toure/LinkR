@@ -9,7 +9,8 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument("-s", "--skip_test_name", nargs='+', dest="skip_test",
                     help="Name of test(s) to mark skipped.")
-
+parser.add_argument("-m", "--skip_message", dest="message",
+                    help="Detailing in regards to skipping test, ex: bz1234")
 parser.add_argument("-ts", "--test_suite", dest="ts",
                     help="Test suite id.")
 
@@ -41,28 +42,21 @@ def gen_junit():
     """
 
     if len(args.tc) == 1:
-        test_case = [TestCase("{}: {}".format(args.tn, args.tc.pop(0)), '', args.et, '', '')]
-        ts = TestSuite(args.ts, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
-                                                       'polarion-custom-isautomated': True,
-                                                       'polarion-custom-tags': args.tags})
+        test_case = [TestCase("{}: {}".format(args.ts, args.tc.pop(0)), '', args.et, '', '')]
+        ts = [TestSuite(args.tn, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
+                                                        'polarion-custom-isautomated': True,
+                                                        'polarion-custom-tags': args.tags})]
     else:
-        # TODO complete skip test logic.
-        # if args.skip_test:
-        #    for test in args.skip_test:
-        #        test_case = [TestCase("{}: {}".format(args.tn, test), '', args.et, '', '').add_skipped_info(
-        #            message="this is a test skip message.")]
-        # else:
-        test_case = [TestCase("{}: {}".format(args.tn, args.tc.pop(0)), '', args.et, '', '')]
-
+        test_case = [TestCase("{}: {}".format(args.ts, args.tc.pop(0), '', args.et, '', ''))]
         for cases in args.tc:
-            test_case.append(TestCase("{}: {}".format(args.tn, cases), '', args.et, '', ''))
+            test_case.append(TestCase("{}: {}".format(args.ts, cases), '', args.et, '', ''))
 
-        ts = TestSuite(args.ts, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
-                                                       'polarion-custom-isautomated': True,
-                                                       'polarion-custom-tags': args.tags})
+        ts = [TestSuite(args.tn, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
+                                                        'polarion-custom-isautomated': True,
+                                                        'polarion-custom-tags': args.tags})]
 
     with open(args.output_f, 'w') as results:
-        TestSuite.to_file(results, [ts])
+        TestSuite.to_file(results, ts)
 
 
 def main():
@@ -75,6 +69,7 @@ def main():
         exit(1)
     else:
         gen_junit()
+
 
 if __name__ == "__main__":
     main()
