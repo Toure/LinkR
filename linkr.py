@@ -45,7 +45,7 @@ def gen_junit():
 
     if len(args.tc) == 1:
         test_case = [TestCase(args.tc.pop(0), '', args.et, '', '')]
-        ts = [TestSuite(args.tn, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
+        ts = [TestSuite(args.ts, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
                                                         'polarion-project-id': args.project,
                                                         'polarion-custom-isautomated': True,
                                                         'polarion-custom-tags': args.tags})]
@@ -54,7 +54,7 @@ def gen_junit():
         for cases in args.tc:
             test_case.append(TestCase(cases, '', args.et, '', ''))
 
-        ts = [TestSuite(args.tn, test_case, properties={'polarion-project-id': args.project,
+        ts = [TestSuite(args.ts, test_case, properties={'polarion-project-id': args.project,
                                                         'polarion-custom-jenkinsjobs': args.job_url,
                                                         'polarion-custom-isautomated': True,
                                                         'polarion-custom-tags': args.tags})]
