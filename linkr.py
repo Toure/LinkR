@@ -11,6 +11,8 @@ parser.add_argument("-s", "--skip_test_name", nargs='+', dest="skip_test",
                     help="Name of test(s) to mark skipped.")
 parser.add_argument("-m", "--skip_message", dest="message",
                     help="Detailing in regards to skipping test, ex: bz1234")
+parser.add_argument("-pn", "--project_name", dest="project",
+                    help="Name of project which testsuite and testcase belong.")
 parser.add_argument("-ts", "--test_suite", dest="ts",
                     help="Test suite id.")
 
@@ -44,6 +46,7 @@ def gen_junit():
     if len(args.tc) == 1:
         test_case = [TestCase("{}: {}".format(args.ts, args.tc.pop(0)), '', args.et, '', '')]
         ts = [TestSuite(args.tn, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
+                                                        'polarion-project-id': args.project,
                                                         'polarion-custom-isautomated': True,
                                                         'polarion-custom-tags': args.tags})]
     else:
@@ -51,7 +54,8 @@ def gen_junit():
         for cases in args.tc:
             test_case.append(TestCase("{}: {}".format(args.ts, cases), '', args.et, '', ''))
 
-        ts = [TestSuite(args.tn, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
+        ts = [TestSuite(args.tn, test_case, properties={'polarion-project-id': args.project,
+                                                        'polarion-custom-jenkinsjobs': args.job_url,
                                                         'polarion-custom-isautomated': True,
                                                         'polarion-custom-tags': args.tags})]
 
