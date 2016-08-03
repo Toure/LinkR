@@ -25,9 +25,6 @@ parser.add_argument("-tn", "--test_name", dest="tn",
 parser.add_argument("-et", "--elapse_time", dest="et", type=int,
                     help="Total time elapsed to complete test.")
 
-parser.add_argument("-jl", "--job_link", default=None, dest="job_url",
-                    help="Job link provides a means of including job url in test update.")
-
 parser.add_argument("-t", "--tags", default=None, dest="tags",
                     help="Tags to be included on all specified testcase.")
 
@@ -45,8 +42,7 @@ def gen_junit():
 
     if len(args.tc) == 1:
         test_case = [TestCase(args.tc.pop(0), '', args.et, '', '')]
-        ts = [TestSuite(args.ts, test_case, properties={'polarion-custom-jenkinsjobs': args.job_url,
-                                                        'polarion-project-id': args.project,
+        ts = [TestSuite(args.ts, test_case, properties={'polarion-project-id': args.project,
                                                         'polarion-custom-isautomated': True,
                                                         'polarion-custom-tags': args.tags})]
     else:
@@ -55,7 +51,6 @@ def gen_junit():
             test_case.append(TestCase(cases, '', args.et, '', ''))
 
         ts = [TestSuite(args.ts, test_case, properties={'polarion-project-id': args.project,
-                                                        'polarion-custom-jenkinsjobs': args.job_url,
                                                         'polarion-custom-isautomated': True,
                                                         'polarion-custom-tags': args.tags})]
 
