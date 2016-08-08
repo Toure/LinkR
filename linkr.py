@@ -56,7 +56,7 @@ def gen_junit():
         TestSuite.to_file(results, ts)
 
 
-def gen_polarion_property_file(testcase_id, filename="polarion.props"):
+def gen_polarion_property_file(testcase_id, filename="/tmp/polarion.props"):
     """
     Generate a simple mapping file.
     :return: polarion.properties
