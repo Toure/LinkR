@@ -68,6 +68,7 @@ def gen_polarion_property_file(testcase_id, filename="polarion.properties"):
     with open(filename, 'w') as f:
         f.write("polarion.project=RHELOpenStackPlatform\n"
                 "polarion.run=LinkR Test\n"
+                "polarion.polarion-id={}\n".format(args.project)
                 )
         for tc_id in testcase_id:
             f.write("{}={}\n".format(tc_id, tc_id))
