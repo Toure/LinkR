@@ -41,11 +41,13 @@ def gen_junit():
     """
 
     if len(args.tc) == 1:
+        gen_polarion_property_file(args.tc)
         test_case = [TestCase(args.tc.pop(0), '', args.et, '', '')]
         ts = [TestSuite(args.ts, test_case, properties={'polarion-project-id': args.project,
                                                         'polarion-custom-isautomated': True,
                                                         'polarion-custom-tags': args.tags})]
     else:
+        gen_polarion_property_file(args.tc)
         test_case = [TestCase(args.tc.pop(0), '', args.et, '', '')]
         for cases in args.tc:
             test_case.append(TestCase(cases, '', args.et, '', ''))
@@ -56,6 +58,20 @@ def gen_junit():
 
     with open(args.output_f, 'w') as results:
         TestSuite.to_file(results, ts)
+
+
+def gen_polarion_property_file(testcase_id, filename="polarion.properties"):
+    """
+    Generate a simple mapping file.
+    :return: polarion.properties
+    """
+    with open(filename, 'w') as f:
+        f.write("polarion.project=RHELOpenStackPlatform\n"
+                "polarion.run=LinkR Test\n"
+                )
+        for tc_id in testcase_id:
+            f.write("{}={}\n".format(tc_id, tc_id))
+        f.close()
 
 
 def main():
