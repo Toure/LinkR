@@ -30,6 +30,12 @@ parser.add_argument("-et", "--elapse_time", dest="et", type=int,
 parser.add_argument("-t", "--tags", default=None, dest="tags",
                     help="Tags to be included on all specified testcase.")
 
+parser.add_argument("-d", "--description", dest="desc",
+                    help="Description of Test Run: ex: This will rock the world.")
+
+parser.add_argument("-r", "--release", dest="rel",
+                    help="Planned in release name: ex: RHOS9")
+
 parser.add_argument("-pf", "--props", default="/tmp/polarion.props", dest="props_file",
                     help="Polarion properties filename with path: ex: /tmp/polarion.props")
 
@@ -49,6 +55,8 @@ def gen_junit():
         gen_polarion_property_file(args.tc, args.props_file)
         test_case = [TestCase(args.tc.pop(0), '', args.et, '', '')]
         ts = [TestSuite(args.project, test_case, properties={'polarion-project-id': args.ts,
+                                                             'polarion-custom-description': args.desc,
+                                                             'polarion-custom-plannedin': args.rel,
                                                              'polarion-custom-isautomated': True,
                                                              'polarion-custom-tags': args.tags})]
     else:
@@ -58,6 +66,8 @@ def gen_junit():
             test_case.append(TestCase(cases, '', args.et, '', ''))
 
         ts = [TestSuite(args.project, test_case, properties={'polarion-project-id': args.ts,
+                                                             'polarion-custom-description': args.desc,
+                                                             'polarion-custom-plannedin': args.rel,
                                                              'polarion-custom-isautomated': True,
                                                              'polarion-custom-tags': args.tags})]
 

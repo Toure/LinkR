@@ -23,6 +23,10 @@ optional arguments:
   -et ET, --elapse_time ET
                         Total time elapsed to complete test.
   -t TAGS, --tags TAGS  Tags to be included on all specified testcase.
+  -d DESC, --description DESC
+                        Description of Test Run: ex: This will rock the world.
+  -r REL, --release REL
+                        Planned in release name: ex: RHOS9
   -pf PROPS_FILE, --props PROPS_FILE
                         Polarion properties filename with path: ex:
                         /tmp/polarion.props
