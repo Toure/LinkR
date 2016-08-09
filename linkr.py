@@ -4,7 +4,7 @@ from junitxml import TestSuite, TestCase
 from sys import argv, exit
 
 parser = argparse.ArgumentParser(
-    description="Example: python linkr.py  -pn TestProject -ts TestSuite_ID -tc TestCase-01 TestCase-02 "
+    description="Example: python linkr.py  -pn TestProject -tr TestWorld -ts TestSuite_ID -tc TestCase-01 TestCase-02 "
                 "-et 4 -pf /tmp/foo.props -o results.xml")
 
 # TODO add functionality for skipped / failed test.
@@ -30,10 +30,10 @@ parser.add_argument("-et", "--elapse_time", dest="et", type=int,
 parser.add_argument("-t", "--tags", default=None, dest="tags",
                     help="Tags to be included on all specified testcase.")
 
-parser.add_argument("-d", "--description", dest="desc",
+parser.add_argument("-d", "--description", default=None, dest="desc",
                     help="Description of Test Run: ex: This will rock the world.")
 
-parser.add_argument("-r", "--release", dest="rel",
+parser.add_argument("-r", "--release", default=None, dest="rel",
                     help="Planned in release name: ex: RHOS9")
 
 parser.add_argument("-pf", "--props", default="/tmp/polarion.props", dest="props_file",
@@ -50,26 +50,20 @@ def gen_junit():
     Generates junit xml file from arguments passed on the cli.
     :return: junit.xml
     """
+    keys = ["polarion-project-id", "polarion-custom-description", "polarion-custom-plannedin",
+            "polarion-custom-isautomated", "polarion-custom-tags"]
+    values = [args.ts, args.desc, args.rel, True, args.tags]
+    props = {key: value for key, value in zip(keys, values)
+             if value is not None}
 
-    if len(args.tc) == 1:
-        gen_polarion_property_file(args.tc, args.props_file)
-        test_case = [TestCase(args.tc.pop(0), '', args.et, '', '')]
-        ts = [TestSuite(args.project, test_case, properties={'polarion-project-id': args.ts,
-                                                             'polarion-custom-description': args.desc,
-                                                             'polarion-custom-plannedin': args.rel,
-                                                             'polarion-custom-isautomated': True,
-                                                             'polarion-custom-tags': args.tags})]
-    else:
-        gen_polarion_property_file(args.tc, args.props_file)
-        test_case = [TestCase(args.tc.pop(0), '', args.et, '', '')]
+    gen_polarion_property_file(args.tc, args.props_file)
+    test_case = [TestCase(args.tc.pop(0), '', args.et)]
+
+    if len(args.tc) >= 1:
         for cases in args.tc:
-            test_case.append(TestCase(cases, '', args.et, '', ''))
+            test_case.append(TestCase(cases, '', args.et))
 
-        ts = [TestSuite(args.project, test_case, properties={'polarion-project-id': args.ts,
-                                                             'polarion-custom-description': args.desc,
-                                                             'polarion-custom-plannedin': args.rel,
-                                                             'polarion-custom-isautomated': True,
-                                                             'polarion-custom-tags': args.tags})]
+    ts = [TestSuite(args.project, test_case, properties=props)]
 
     with open(args.output_f, 'w') as results:
         TestSuite.to_file(results, ts)
