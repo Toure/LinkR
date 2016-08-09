@@ -50,6 +50,7 @@ def gen_junit():
     Generates junit xml file from arguments passed on the cli.
     :return: junit.xml
     """
+    # This block allows for a dynamic dictionary to be created depending on arguments passed.
     keys = ["polarion-project-id", "polarion-custom-description", "polarion-custom-plannedin",
             "polarion-custom-isautomated", "polarion-custom-tags"]
     values = [args.ts, args.desc, args.rel, True, args.tags]
