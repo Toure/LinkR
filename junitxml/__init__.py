@@ -3,17 +3,13 @@
 from collections import defaultdict
 import sys
 import re
-import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
 import xml.dom.minidom
 
+import six
 from six import u, iteritems, PY2
 
-try:
-    # Python 2
-    unichr
-except NameError:  # pragma: nocover
-    # Python 3
-    unichr = chr
+
 
 """
 Based on the understanding of what Jenkins can parse for JUnit XML files.
@@ -98,7 +94,8 @@ class TestSuite(object):
     def build_xml_doc(self, encoding=None):
         """
         Builds the XML document for the JUnit test suite.
-        Produces clean unicode strings and decodes non-unicode with the help of encoding.
+        Produces clean unicode strings and decodes non-unicode with the help of
+        encoding.
         @param encoding: Used to decode encoded strings.
         @return: XML document with unicode string elements
         """
@@ -123,16 +120,18 @@ class TestSuite(object):
         if self.package:
             test_suite_attributes['package'] = decode(self.package, encoding)
         if self.timestamp:
-            test_suite_attributes['timestamp'] = decode(self.timestamp, encoding)
+            test_suite_attributes['timestamp'] = decode(self.timestamp,
+                                                        encoding)
 
-        xml_element = ET.Element("testsuite", test_suite_attributes)
+        xml_element = ElementTree.Element("testsuite", test_suite_attributes)
 
         # add any properties
         if self.properties:
-            props_element = ET.SubElement(xml_element, "properties")
+            props_element = ElementTree.SubElement(xml_element, "properties")
             for k, v in self.properties.items():
-                attrs = {'name': decode(k, encoding), 'value': decode(v, encoding)}
-                ET.SubElement(props_element, "property", attrs)
+                attrs = {'name': decode(k, encoding),
+                         'value': decode(v, encoding)}
+                ElementTree.SubElement(props_element, "property", attrs)
 
         # test cases
         for case in self.test_cases:
@@ -141,9 +140,10 @@ class TestSuite(object):
             if case.elapsed_sec:
                 test_case_attributes['time'] = "%f" % case.elapsed_sec
             if case.classname:
-                test_case_attributes['classname'] = decode(case.classname, encoding)
+                test_case_attributes['classname'] = decode(case.classname,
+                                                           encoding)
 
-            test_case_element = ET.SubElement(
+            test_case_element = ElementTree.SubElement(
                 xml_element, "testcase", test_case_attributes)
 
             # failures
@@ -151,7 +151,7 @@ class TestSuite(object):
                 attrs = {'type': 'failure'}
                 if case.failure_message:
                     attrs['message'] = decode(case.failure_message, encoding)
-                failure_element = ET.Element("failure", attrs)
+                failure_element = ElementTree.Element("failure", attrs)
                 if case.failure_output:
                     failure_element.text = decode(case.failure_output, encoding)
                 test_case_element.append(failure_element)
@@ -161,7 +161,7 @@ class TestSuite(object):
                 attrs = {'type': 'error'}
                 if case.error_message:
                     attrs['message'] = decode(case.error_message, encoding)
-                error_element = ET.Element("error", attrs)
+                error_element = ElementTree.Element("error", attrs)
                 if case.error_output:
                     error_element.text = decode(case.error_output, encoding)
                 test_case_element.append(error_element)
@@ -171,20 +171,20 @@ class TestSuite(object):
                 attrs = {'type': 'skipped'}
                 if case.skipped_message:
                     attrs['message'] = decode(case.skipped_message, encoding)
-                skipped_element = ET.Element("skipped", attrs)
+                skipped_element = ElementTree.Element("skipped", attrs)
                 if case.skipped_output:
                     skipped_element.text = decode(case.skipped_output, encoding)
                 test_case_element.append(skipped_element)
 
             # test stdout
             if case.stdout:
-                stdout_element = ET.Element("system-out")
+                stdout_element = ElementTree.Element("system-out")
                 stdout_element.text = decode(case.stdout, encoding)
                 test_case_element.append(stdout_element)
 
             # test stderr
             if case.stderr:
-                stderr_element = ET.Element("system-err")
+                stderr_element = ElementTree.Element("system-err")
                 stderr_element.text = decode(case.stderr, encoding)
                 test_case_element.append(stderr_element)
 
@@ -196,8 +196,8 @@ class TestSuite(object):
         Returns the string representation of the JUnit XML document.
         @param encoding: The encoding of the input.
         @return: unicode string
-        :param prettyprint:
-        :param test_suites:
+        :param test_suites: name of test suites.
+        :param prettyprint: convert to human happy output.
         """
 
         try:
@@ -205,7 +205,7 @@ class TestSuite(object):
         except TypeError:
             raise Exception('test_suites must be a list of test suites')
 
-        xml_element = ET.Element("testsuites")
+        xml_element = ElementTree.Element("testsuites")
         attributes = defaultdict(int)
         for ts in test_suites:
             ts_xml = ts.build_xml_doc(encoding=encoding)
@@ -217,17 +217,19 @@ class TestSuite(object):
         for key, value in iteritems(attributes):
             xml_element.set(key, str(value))
 
-        xml_string = ET.tostring(xml_element, encoding=encoding)
+        xml_string = ElementTree.tostring(xml_element, encoding=encoding)
         # is encoded now
         xml_string = TestSuite._clean_illegal_xml_chars(
             xml_string.decode(encoding or 'utf-8'))
         # is unicode now
 
         if prettyprint:
-            # minidom.parseString() works just on correctly encoded binary strings
+            # minidom.parseString() works just on correctly
+            # encoded binary strings
             xml_string = xml_string.encode(encoding or 'utf-8')
             xml_string = xml.dom.minidom.parseString(xml_string)
-            # toprettyxml() produces unicode if no encoding is being passed or binary string with an encoding
+            # toprettyxml() produces unicode if no encoding is
+            # being passed or binary string with an encoding
             xml_string = xml_string.toprettyxml(encoding=encoding)
             if encoding:
                 xml_string = xml_string.decode(encoding)
@@ -241,7 +243,8 @@ class TestSuite(object):
         """
         xml_string = TestSuite.to_xml_string(
             test_suites, prettyprint=prettyprint, encoding=encoding)
-        # has problems with encoded str with non-ASCII (non-default-encoding) characters!
+        # has problems with encoded str with non-ASCII
+        # (non-default-encoding) characters!
         file_descriptor.write(xml_string)
 
     @staticmethod
@@ -249,8 +252,13 @@ class TestSuite(object):
         """
         Removes any illegal unicode characters from the given XML string.
 
-        @see: http://stackoverflow.com/questions/1707890/fast-way-to-filter-illegal-xml-unicode-chars-in-python
         """
+        try:
+            # Python 2
+            unichr_ = unichr
+        except NameError:  # pragma: nocover
+            # Python 3
+            unichr_ = chr
 
         illegal_unichrs = [
             (0x00, 0x08), (0x0B, 0x1F), (0x7F, 0x84), (0x86, 0x9F),
@@ -262,7 +270,7 @@ class TestSuite(object):
             (0xDFFFE, 0xDFFFF), (0xEFFFE, 0xEFFFF), (0xFFFFE, 0xFFFFF),
             (0x10FFFE, 0x10FFFF)]
 
-        illegal_ranges = ["%s-%s" % (unichr(low), unichr(high))
+        illegal_ranges = ["%s-%s" % (unichr_(low), unichr_(high))
                           for (low, high) in illegal_unichrs
                           if low < sys.maxunicode]
 

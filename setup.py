@@ -11,19 +11,18 @@ with open('VERSION') as handle:
 
 setup(
     name='LinkR',
-    author='Toure',
+    author='Toure Dunnon',
     author_email='toure@redhat.com',
     version=VERSION,
-    install_requires=['junit-xml', ],
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2.7',
     ],
-    description=('junit generator for bash scripts to produce jenkins read'
-                 'xml reports.'),
+    description=('junit generator to produce jenkins results xml reports'
+                 'for polarion.'),
     include_package_data=True,
     license='Apache',
     long_description=LONG_DESCRIPTION,

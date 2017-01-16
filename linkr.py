@@ -1,8 +1,8 @@
-"""
-LinkR is a wrapper for shell scripts to interface with jenkins through
-the generation of junit status file."""
+#!/usr/bin/env python
 
 import argparse
+import requests
+from requests.auth import HTTPBasicAuth
 from sys import argv
 from junitxml import TestSuite, TestCase
 
@@ -44,6 +44,21 @@ def _gen_polarion_property_file(args):
         for tc_id in args.tc:
             prop_file.write("{}={}\n".format(tc_id, tc_id))
         prop_file.close()
+
+
+def upload(polarion_url, results, username, password):
+    """
+    Upload will submit a results file via polarion ReST interface.
+    """
+    polarion_request = requests.post(polarion_url,
+                                     data=results,
+                                     auth=HTTPBasicAuth(username, password))
+
+    try:
+        polarion_request.status_code == requests.codes.ok
+    except requests.exceptions.RequestException:
+        print("Results upload failed with the follow: {}".format(
+            polarion_request.status_code))
 
 
 def main():
