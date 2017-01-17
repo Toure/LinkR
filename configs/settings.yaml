@@ -1,0 +1,7 @@
+---
+# Polarion Configuration
+polarion_info:
+  credentials:
+    username: "ci-user"
+    password: "supersecret"
+  url: "https://polarion-devel.engineering.redhat.com/polarion/import/xunit"

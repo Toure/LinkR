@@ -5,8 +5,6 @@ import sys
 import re
 from xml.etree import ElementTree
 import xml.dom.minidom
-
-import six
 from six import u, iteritems, PY2
 
 
