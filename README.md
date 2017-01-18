@@ -39,6 +39,25 @@ optional arguments:
 
 
 ```
+#### Installation:
+
+Run the setup script to install.
+```
+>pip install -r requirements.txt
+>python setup.py install
+
+```
+This will install the project into the default site-package location, it is
+advised to start a virtualenv if this is to be deployed for temporary use.
+
+##### Virtual Env Install:
+```
+> virtualenv -p python2.7 LinkR_VirtEnv
+> source LinkR_VirtEnv/bin/activate
+(LinkR_VirtEnv)> pip install -r requirements.txt
+(LinkR_VirtEnv)> python setup.py install
+
+```
 
 #### Output: results.xml
 ```
