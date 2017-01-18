@@ -2,10 +2,7 @@
 # coding=utf-8
 """A setuptools-based script for installing Betelgeuse."""
 from setuptools import setup, find_packages
-from pip import req
 
-install_reqs = req.parse_requiremetns('requirements.txt', session=False)
-reqs = [str(ir.req) for ir install_reqs]
 
 with open('README.md') as handle:
     LONG_DESCRIPTION = handle.read()
@@ -30,12 +27,8 @@ setup(
     include_package_data=True,
     license='Apache',
     long_description=LONG_DESCRIPTION,
-    install_requires=reqs,
     packages=find_packages(),
-    package_data={'': ['LICENSE']},
-    data_files=[
-        ('/etc', ['config/settings.yaml'])
-    ],
+    package_data={'': ['LICENSE', 'settings.yaml']},
     url='https://github.com/Toure/LinkR',
     entry_points={
         'console_scripts': [

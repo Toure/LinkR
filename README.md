@@ -4,11 +4,12 @@ of junit status file.
 
 ### Usage:
 ```
-usage: linkr.py [-h] [-pn PROJECT] [-ts TS] [-tc TC [TC ...]] [-tr TEST_RUN]
-                [-et ET] [-t TAGS] [-pf PROPS_FILE] -o OUTPUT_F
+usage: linkr [-h] [-pn PROJECT] -ts TS -tc TC [TC ...] -tr TEST_RUN [-et ET]
+             [-t TAGS] [-d DESC] [-r REL] [-pf polarion.props] -o results.xml
+             [-u]
 
-Example: python linkr.py -pn TestProject -ts TestSuite_ID -tc TestCase-01
-TestCase-02 -et 4 -pf /tmp/foo.props -o results.xml
+Example: python linkr -pn TestProject -tr TestWorld -ts TestSuite_ID -tc
+TestCase-01TestCase-02 -et 4 -pf /tmp/foo.props -u -o results.xml
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -27,11 +28,15 @@ optional arguments:
                         Description of Test Run: ex: This will rock the world.
   -r REL, --release REL
                         Planned in release name: ex: RHOS9
-  -pf PROPS_FILE, --props PROPS_FILE
+  -pf polarion.props, --props polarion.props
                         Polarion properties filename with path: ex:
                         /tmp/polarion.props
-  -o OUTPUT_F, --output_file OUTPUT_F
+  -o results.xml, --output_file results.xml
                         Junit output filename
+  -u , --upload_results
+                        Upload boolean will indicate the need to push results
+                        to polarion.
+
 
 ```
 
