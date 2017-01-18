@@ -8,7 +8,7 @@ usage: linkr [-h] [-pn PROJECT] -ts TS -tc TC [TC ...] -tr TEST_RUN [-et ET]
              [-t TAGS] [-d DESC] [-r REL] [-pf polarion.props] -o results.xml
              [-u]
 
-Example: python linkr -pn TestProject -tr TestWorld -ts TestSuite_ID -tc
+Example: linkr -pn TestProject -tr TestWorld -ts TestSuite_ID -tc
 TestCase-01TestCase-02 -et 4 -pf /tmp/foo.props -u -o results.xml
 
 optional arguments:
@@ -54,10 +54,10 @@ advised to start a virtualenv if this is to be deployed for temporary use.
 ```
 > virtualenv -p python2.7 LinkR_VirtEnv
 > source LinkR_VirtEnv/bin/activate
-(LinkR_VirtEnv)> pip install -r requirements.txt
-(LinkR_VirtEnv)> python setup.py install
-
-```
+(LinkR_VirtEnv)> p
+(LinkR_VirtEnv)> python setup
+(LinkR_VirtEnv)> linkr -pn TestProject -tr TestWorld -ts TestSuite_ID -tc
+TestCase-01TestCase-02 -et 4 -pf /tmp/foo.props -u -o results.xml
 
 #### Output: results.xml
 ```
