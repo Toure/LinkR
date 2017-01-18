@@ -1,6 +1,6 @@
-# LinkR
-Wrapper for shell scripts to interface with jenkins through the generation
-of junit status file.
+# LinkR - Link Results.
+Python utility which will generate a junitxml file for the purpose of updating
+test results in Polarion.
 
 ### Usage:
 ```
