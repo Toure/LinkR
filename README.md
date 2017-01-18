@@ -1,5 +1,5 @@
 # LinkR - Link Results.
-Python utility which will generate a junitxml file for the purpose of updating
+Python utility which will generate a junitxml file for the purpoes of updating
 test results in Polarion.
 
 ### Usage:
@@ -40,6 +40,17 @@ optional arguments:
 
 ```
 #### Installation:
+Update credentials to match your environment for upload services.
+
+```
+>vi linkr/configs/settings.yaml
+polarion_info:
+  credentials:
+    username: "ci-user"
+    password: "supersecret"
+  url: "https://localhost"
+
+```
 
 Run the setup script to install.
 ```
