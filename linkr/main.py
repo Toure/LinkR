@@ -76,8 +76,7 @@ class LinkR(ConfigManger):
                                 auth=auth.HTTPBasicAuth(username,
                                                         password))
         status_code = polarion_request.status_code
-        # TODO replace with "codes.ok" check.
-        if status_code == 200:
+        if status_code == codes.ok:
             return status_code
         else:
             print("Results upload failed with the follow: {}".format(
