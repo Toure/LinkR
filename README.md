@@ -91,7 +91,17 @@ TestCase-01TestCase-02 -et 4 -pf /tmp/foo.props -u -o results.xml
 
 #### Output: foo.props
 ```
-polarion.run=TestWorld
-TestCase-01=TestCase-01
-TestCase-02=TestCase-02
+{
+ "properties": {
+  "polarion-custom-isautomated": true,
+  "polarion-project-id": "TestSuite_ID"
+ },
+ "casemap": {
+  "TestWorld": [
+   {
+    "polarion-testcase-id": "TestCase-01TestCase-02"
+   }
+  ]
+ }
+}
 ```
