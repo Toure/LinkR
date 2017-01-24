@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-
+# -*- coding: UTF-8 -*-
 import argparse
-from requests import post, auth, codes, exceptions
 from sys import argv
+from requests import post, auth, codes, exceptions
 from junitxml import TestCase, TestSuite
+from collections import OrderedDict
+from json import dump
 from configs.config_manager import ConfigManger
 
 
@@ -23,18 +25,30 @@ class LinkR(ConfigManger):
         Generates junit xml file from arguments passed on the cli.
         :return: junit.xml
         """
+
+        test_attrs = [
+            "polarion-project-id", "polarion-custom-description",
+            "polarion-custom-plannedin", "polarion-custom-isautomated",
+            "polarion-custom-tags"
+        ]
+
+        test_attrs_values = [
+            self.args.ts, self.args.desc,
+            self.args.rel, True, self.args.tags
+        ]
+
         # This block allows for a dynamic dictionary to be created
         # depending on arguments passed.
-        keys = ["polarion-project-id", "polarion-custom-description",
-                "polarion-custom-plannedin", "polarion-custom-isautomated",
-                "polarion-custom-tags"]
-        values = [self.args.ts, self.args.desc,
-                  self.args.rel, True, self.args.tags]
-        props = {key: value for key, value in zip(keys, values)
-                 if value is not None}
+        props = {
+            key: value for key, value in zip(test_attrs,
+                                             test_attrs_values)
+            if value is not None
+                 }
 
-        self._gen_polarion_property_file(self.args.tr, self.args.tc,
+        self._gen_polarion_property_file(test_attrs, test_attrs_values,
+                                         self.args.tr, self.args.tc,
                                          property_file=self.args.pf)
+
         test_case = [TestCase(self.args.tc.pop(0), '', self.args.et)]
 
         if len(self.args.tc) >= 1:
@@ -50,19 +64,35 @@ class LinkR(ConfigManger):
                          self.username, self.password)
 
     @staticmethod
-    def _gen_polarion_property_file(test_run, test_case, property_file=None):
+    def _gen_polarion_property_file(test_attrs, test_attrs_values,
+                                    test_run, test_case_id, property_file=None):
         """
-        Generate a simple mapping file.
-        :return: polarion.properties
+        Generate a json mapping file.
+        :param: test_attrs: list of polarion test run attributes.
+        :param: test_attrs_values: list of values for test run attributes.
+        :param: test_run: id of polarion test run.
+        :param: test_case_id: list of test case ids.
+        :param: property_file: output name of json file, if none test_run will
+        used for file name.
+        :return: polarion properties filename.
         """
+        test_keys = ["polarion-testcase-id"] * len(test_case_id)
+        properties_mapping = OrderedDict()
+        properties_mapping["properties"] = {key: value for key, value in
+                                            zip(test_attrs, test_attrs_values)
+                                            if value is not None
+                                            }
+        properties_mapping["casemap"] = {
+            test_run: [
+                {key: value} for key, value in zip(test_keys, test_case_id)
+                ]
+        }
+
         if property_file is None:
-            property_file = "/tmp/props.json"
+            property_file = "/tmp/{}.json".format(test_run)
 
         with open(property_file, 'w') as prop_file:
-            prop_file.write("polarion.run={}\n".format(test_run))
-            for tc_id in test_case:
-                prop_file.write("{}={}\n".format(tc_id, tc_id))
-            prop_file.close()
+            dump(properties_mapping, prop_file, sort_keys=False, indent=1)
 
         return property_file
 
