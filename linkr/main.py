@@ -2,16 +2,17 @@
 # -*- coding: UTF-8 -*-
 import argparse
 from sys import argv
-from requests import post, auth, codes, exceptions
 from junitxml import TestCase, TestSuite
 from collections import OrderedDict
 from json import dump
+from requests import post, auth, codes, exceptions
+import re
 from configs.config_manager import ConfigManger
 
 
 class LinkR(ConfigManger):
     """
-    LinkR
+    LinkR class
     """
     def __init__(self, args_obj):
         super(LinkR, self).__init__()
@@ -43,7 +44,7 @@ class LinkR(ConfigManger):
             key: value for key, value in zip(test_attrs,
                                              test_attrs_values)
             if value is not None
-                 }
+        }
 
         self._gen_polarion_property_file(test_attrs, test_attrs_values,
                                          self.args.tr, self.args.tc,
@@ -65,7 +66,8 @@ class LinkR(ConfigManger):
 
     @staticmethod
     def _gen_polarion_property_file(test_attrs, test_attrs_values,
-                                    test_run, test_case_id, property_file=None):
+                                    test_run, test_case_id,
+                                    property_file=None):
         """
         Generate a json mapping file.
         :param: test_attrs: list of polarion test run attributes.
@@ -85,7 +87,7 @@ class LinkR(ConfigManger):
         properties_mapping["casemap"] = {
             test_run: [
                 {key: value} for key, value in zip(test_keys, test_case_id)
-                ]
+            ]
         }
 
         if property_file is None:
@@ -101,6 +103,11 @@ class LinkR(ConfigManger):
         """
         Upload will submit a results file via polarion ReST interface.
         """
+        url_match = '(http(s)?)\:\/\/localhost'
+        if re.search(url_match, url):
+            print("Please configure url settings.")
+            exit(1)
+
         polarion_request = post(url,
                                 data=data_file,
                                 auth=auth.HTTPBasicAuth(username,
@@ -118,7 +125,7 @@ def main():
     """Entry point"""
     parser = argparse.ArgumentParser(
         description="Example: linkr  -pn TestProject "
-                    "-tr TestWorld -ts TestSuite_ID -tc TestCase-01"
+                    "-tr TestWorld -ts TestSuite_ID -tc TestCase-01 "
                     "TestCase-02 -et 4 -pf /tmp/foo.props -u -o results.xml")
     parser.add_argument("-pn", "--project_name", dest="project",
                         help="Name of project which testsuite "
@@ -147,7 +154,7 @@ def main():
     parser.add_argument("-r", "--release", default=None, dest="rel",
                         help="Planned in release name: ex: RHOS9")
 
-    parser.add_argument("-pf", "--props", metavar="polarion.props",
+    parser.add_argument("-pf", "--props", metavar="<testrun file name>",
                         default="/tmp/polarion.props",
                         dest="pf",
                         help="Polarion properties filename with path:"
@@ -156,7 +163,7 @@ def main():
                         action='store_true', default=False,
                         help="Upload boolean will indicate the need to push "
                              "results to polarion.")
-    parser.add_argument("-o", "--output_file", metavar="results.xml",
+    parser.add_argument("-o", "--output_file", metavar="<results filename>",
                         dest="output_f", required=True,
                         help="Junit output filename")
 

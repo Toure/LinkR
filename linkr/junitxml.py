@@ -151,7 +151,8 @@ class TestSuite(object):
                     attrs['message'] = decode(case.failure_message, encoding)
                 failure_element = ElementTree.Element("failure", attrs)
                 if case.failure_output:
-                    failure_element.text = decode(case.failure_output, encoding)
+                    failure_element.text = decode(case.failure_output,
+                                                  encoding)
                 test_case_element.append(failure_element)
 
             # errors
@@ -171,7 +172,8 @@ class TestSuite(object):
                     attrs['message'] = decode(case.skipped_message, encoding)
                 skipped_element = ElementTree.Element("skipped", attrs)
                 if case.skipped_output:
-                    skipped_element.text = decode(case.skipped_output, encoding)
+                    skipped_element.text = decode(case.skipped_output,
+                                                  encoding)
                 test_case_element.append(skipped_element)
 
             # test stdout
