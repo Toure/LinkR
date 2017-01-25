@@ -117,7 +117,7 @@ class LinkR(ConfigManger):
 def main():
     """Entry point"""
     parser = argparse.ArgumentParser(
-        description="Example: python linkr  -pn TestProject "
+        description="Example: linkr  -pn TestProject "
                     "-tr TestWorld -ts TestSuite_ID -tc TestCase-01"
                     "TestCase-02 -et 4 -pf /tmp/foo.props -u -o results.xml")
     parser.add_argument("-pn", "--project_name", dest="project",
